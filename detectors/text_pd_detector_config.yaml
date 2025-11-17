@@ -1,0 +1,36 @@
+version: 1
+detector_name: "baseline_text_pd_detector"
+model: "pii-bert-english-base"  # example placeholder
+supported_languages: ["en"]
+categories:
+  - id: name
+    description: "Personal names (given and family)"
+    regexes: []
+    ml_labels: ["PERSON"]
+  - id: email
+    description: "Email addresses"
+    regexes: ["[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"]
+    ml_labels: []
+  - id: phone
+    description: "Phone numbers"
+    regexes:
+      - "\\+?\\d[\\d\\s().-]{7,}"
+    ml_labels: []
+  - id: address
+    description: "Postal addresses"
+    regexes: []
+    ml_labels: ["ADDRESS"]
+thresholds:
+  low_fpr_targets:
+    fpr_budget: 1e-4
+    tpr_reporting: true
+  postprocessing:
+    min_confidence: 0.9
+    context_window: 64
+actions:
+  block_categories: ["email", "phone", "national_id"]
+  redact_categories: ["name", "address"]
+  log_fields:
+    - detector_version
+    - categories_hit
+    - action
