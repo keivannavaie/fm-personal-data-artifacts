@@ -1,0 +1,54 @@
+paper_title: "Personal Data in Foundation Model Systems: Lifecycle Risks, Measurement, and Governance"
+paper_authors:
+  - name: "Keivan Navaie"
+version: "1.0.0-acm"
+evidence_cutoff: "2025-10-01"
+artifacts:
+  - id: "prisma_protocol"
+    description: "PRISMA 2020 protocol and search/selection artifacts"
+    related_sections: ["Appendix A.1–A.10", "Section 2.1"]
+    paths:
+      - "prisma_protocol/PRISMA_protocol.md"
+      - "inventory/survey_corpus.csv"
+  - id: "red_team_prompts"
+    description: "Red-team prompt sets for PD leakage across FM, RAG, agents"
+    related_sections: ["Section 5.2", "Table 3"]
+    paths:
+      - "red_team_prompts/pd_leakage_prompts.yaml"
+  - id: "detector_configs"
+    description: "Reference PD detector policies and operating points"
+    related_sections: ["Section 5.3", "Section 6.3", "Table 28"]
+    paths:
+      - "detectors/text_pd_detector_config.yaml"
+      - "detectors/detector_eval_guidelines.md"
+  - id: "rag_profiles"
+    description: "RAG/agent privacy reference profiles and evaluation scenarios"
+    related_sections: ["Section 7.10", "Section 9.4", "Tables 19–21"]
+    paths:
+      - "rag_policy_evals/rag_reference_profiles.yaml"
+      - "rag_policy_evals/rag_eval_scenarios.md"
+  - id: "dpia_template"
+    description: "DPIA checklist and template for FM/RAG/agent stacks"
+    related_sections: ["Section 7.3–7.4", "Table 16"]
+    paths:
+      - "dpiA_template/dpiA_llm_checklist.md"
+  - id: "assurance_case"
+    description: "Privacy assurance-case skeleton and examples"
+    related_sections: ["Section 7.4", "Figure 8"]
+    paths:
+      - "assurance_case/privacy_assurance_case_skeleton.yaml"
+  - id: "telemetry_schema"
+    description: "Schema for PD-relevant telemetry and monitoring events"
+    related_sections: ["Section 7.10.6–7.10.8", "Tables 20, 29"]
+    paths:
+      - "telemetry_schema/telemetry_schema.json"
+  - id: "unlearning_tests"
+    description: "Unlearning/editing test-suite specification"
+    related_sections: ["Section 6.4", "Section 8.10"]
+    paths:
+      - "unlearning_tests/unlearning_test_spec.json"
+  - id: "quick_start"
+    description: "Practitioner Quick Start one-pager"
+    related_sections: ["Appendix A (Practitioner Quick Start)", "Table 28"]
+    paths:
+      - "quick_start/practitioner_quick_start_1pager.md"
