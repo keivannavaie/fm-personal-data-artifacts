@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as follows."
+title: "Personal Data in Foundation Model Systems: Lifecycle Risks, Measurement, and Governance"
+type: article
+authors:
+  - family-names: "Navaie"
+    given-names: "Keivan"
+    affiliation: "Lancaster University; The Alan Turing Institute; Machine Learning Theory and Alignment Scholars"
+    email: "k.navaie@lancaster.ac.uk"
+abstract: >
+  Foundation models (FMs) routinely ingest and generate content that can contain personal data (PD), creating
+  risks that span training, retrieval, and deployment. This survey systematizes the FM privacy surface, catalogs
+  failure modes (memorization, extraction, inversion, membership inference, RAG/agent exfiltration), and evaluates
+  mitigations across the lifecycle. It unifies data-centric controls, privacy-aware training, inference/output
+  mediation, and post-training interventions into a defense-in-depth program, and distills deployable protocols
+  and reporting guidance for canary exposure, targeted extraction/red-teaming, membership inference, and cross-
+  snapshot leakage. The survey further maps regulatory and standards duties (e.g., GDPR, EU AI Act, NIST/ISO) to
+  concrete controls, evidence artifacts, and KPIs, and provides deployment-oriented artifacts (red-team prompts,
+  detector configs, DP recipes, RAG policy evals, DPIA templates, assurance scaffolds, telemetry schema) to
+  support reproducible evaluation and deployment-grade assurance.
+keywords:
+  - foundation models
+  - personal data
+  - privacy
+  - membership inference
+  - exposure
+  - retrieval-augmented generation
+  - RAG
+  - governance
+  - DPIA
+  - assurance
+year: 2025
+notes: >
+  Manuscript submitted to ACM. Please update this file with the final venue, volume/issue, and DOI once
+  available.
