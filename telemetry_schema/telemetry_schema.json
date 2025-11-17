@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FM_PD_Telemetry_Schema",
+  "type": "object",
+  "properties": {
+    "event_type": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "tenant_id": { "type": "string" },
+    "user_hash": { "type": "string", "description": "Pseudonymized user id" },
+    "payload": {
+      "type": "object",
+      "description": "Event-specific fields"
+    }
+  },
+  "required": ["event_type", "timestamp"],
+  "definitions": {
+    "RAG_Retrieval": {
+      "type": "object",
+      "properties": {
+        "query_hash": { "type": "string" },
+        "topk_doc_ids": { "type": "array", "items": { "type": "string" } },
+        "tenant_id": { "type": "string" }
+      },
+      "required": ["query_hash", "topk_doc_ids", "tenant_id"]
+    },
+    "Tool_Egress": {
+      "type": "object",
+      "properties": {
+        "tool_id": { "type": "string" },
+        "bytes": { "type": "integer" },
+        "dest_domain": { "type": "string" },
+        "allowlist_hit": { "type": "boolean" }
+      },
+      "required": ["tool_id", "bytes", "dest_domain", "allowlist_hit"]
+    },
+    "PII_Scan": {
+      "type": "object",
+      "properties": {
+        "detector_ver": { "type": "string" },
+        "hits_count": { "type": "integer" },
+        "rule_ids": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["detector_ver", "hits_count"]
+    }
+  }
+}
