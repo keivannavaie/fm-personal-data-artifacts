@@ -1,0 +1,111 @@
+version: 1
+detector_name: "baseline_asv_pd_detector"
+description: >
+  Reference configuration for an automatic speaker verification (ASV) based
+  personal-data detector. Used to detect whether an audio segment contains a
+  speaker whose identity must be treated as personal data (e.g., enrolled users,
+  high-risk individuals, or voiceprint-protected accounts).
+
+models:
+  embedding_extractor:
+    backbone: "ecapa-tdnn-large"      # placeholder; replace with actual model id
+    sample_rate: 16000
+    window:
+      min_duration_sec: 2.0
+      max_duration_sec: 10.0
+  scoring:
+    metric: "cosine"                  # e.g., cosine or PLDA
+    normalization: "s-norm"           # if used; optional
+
+enrolment:
+  # Parameters for enrolment utterances (for each speaker).
+  min_utterances_per_speaker: 3
+  max_utterances_per_speaker: 20
+  aggregation_method: "average"       # average embeddings across enrolment utterances
+  quality_control:
+    min_snr_db: 10
+    max_background_level_db: -20
+
+thresholds:
+  # Target false-accept-rate budgets for verification.
+  far_targets:
+    - 1e-4
+    - 1e-5
+
+  operating_points:
+    - id: "strict"
+      far_target: 1e-5
+      similarity_threshold: 0.60      # placeholder; set via validation ROC/DET
+      notes: "Use where impersonation has high impact (e.g., account access)."
+    - id: "balanced"
+      far_target: 1e-4
+      similarity_threshold: 0.55      # placeholder; set via validation ROC/DET
+      notes: "Use for monitoring and non-critical PD checks."
+
+  # Optional minimum duration for a verification attempt.
+  min_probe_duration_sec: 2.0
+
+categories:
+  - id: "enrolled_speaker_detected"
+    description: >
+      Audio segment is likely from an enrolled speaker whose voice constitutes
+      personal data or a protected identifier under local regulation.
+    modality: "audio"
+    actions:
+      default: "block_and_log"
+      notes: >
+        Depending on purpose, may trigger additional PD handling (e.g., special
+        logging, erasure workflows) or access control decisions.
+
+  - id: "unknown_speaker"
+    description: >
+      Audio segment is speech but does not match any enrolled identity at the
+      chosen operating point.
+    modality: "audio"
+    actions:
+      default: "log_only"
+      notes: >
+        Still PD if the deployment context treats any individual’s voice as PD,
+        but without enrolment, only generic PD-handling policies apply.
+
+evaluation:
+  # References to evaluation protocol and datasets (see detector_eval_guidelines.md).
+  protocol: "verification_pairs"
+  metrics:
+    - "TPR@FAR=1e-4"
+    - "TPR@FAR=1e-5"
+    - "EER"              # Equal Error Rate (for diagnostic use only)
+
+logging:
+  fields:
+    - "detector_name"
+    - "detector_version"
+    - "event_type"
+    - "speaker_id"           # pseudonymous or hashed id for enrolled speakers
+    - "score"
+    - "operating_point"
+    - "category"
+    - "action"
+  sampling:
+    negative_event_sampling_rate: 0.01
+    positive_event_sampling_rate: 1.0
+
+deployment_policies:
+  default:
+    enrolled_speaker_detected:
+      action: "block_and_log"
+      notes: >
+        In access-control contexts: treat a positive as a successful
+        verification, but also as a PD event for logging/retention.
+    unknown_speaker:
+      action: "log_only"
+      notes: >
+        Use generic PD treatment in deployments where voices are PD by default.
+  per_endpoint:
+    "customer_support_recording":
+      enrolled_speaker_detected:
+        action: "log_only"
+        notes: >
+          Voice is PD for retention/erasure, but not used for authentication.
+      unknown_speaker:
+        action: "log_only"
