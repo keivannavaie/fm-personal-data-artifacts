@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "description": "Reference tests for evaluating the effect of unlearning and parametric edits on PD exposure.",
+  "test_groups": [
+    {
+      "id": "canary_unlearning",
+      "goal": "Ensure seeded PD canaries are no longer retrievable after unlearning.",
+      "inputs_before": "canary_prompts.txt",
+      "inputs_after": "canary_prompts.txt",
+      "metrics": [
+        "match_rate_before",
+        "match_rate_after",
+        "exposure_before",
+        "exposure_after"
+      ],
+      "acceptance": {
+        "match_rate_after": 0.0,
+        "exposure_after_delta": -5.0
+      }
+    },
+    {
+      "id": "mia_delta",
+      "goal": "Check MIA performance on deleted vs retained records at low FPR.",
+      "metrics": [
+        "TPR@FPR=1e-4_before",
+        "TPR@FPR=1e-4_after"
+      ],
+      "acceptance": {
+        "TPR_deleted_after": "<= baseline",
+        "TPR_retained_after": "≈ baseline (±δ)"
+      }
+    }
+  ]
+}
