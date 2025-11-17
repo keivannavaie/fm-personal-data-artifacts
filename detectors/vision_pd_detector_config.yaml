@@ -1,0 +1,99 @@
+version: 1
+detector_name: "baseline_vision_pd_detector"
+description: >
+  Reference configuration for a vision-based personal-data detector focusing
+  primarily on human faces as directly identifying visual PD. Can be extended
+  to other PD categories (e.g., documents with IDs) if labels permit.
+
+models:
+  face_detection:
+    backbone: "retinaface-resnet50"     # placeholder; replace with actual model id
+    input_size: [640, 640]
+    score_threshold: 0.3                # raw detection score threshold
+    nms_iou_threshold: 0.45
+  face_embedding:
+    backbone: "arcface-resnet100"       # placeholder; replace with actual model id
+    embedding_dim: 512
+  classifier:
+    type: "threshold_verification"
+    similarity_metric: "cosine"
+
+categories:
+  - id: "face_present"
+    description: "Presence of one or more human faces in the image/frame."
+    modality: "vision"
+    actions:
+      default: "redact_or_block"
+      notes: "At least one face triggers PD handling; see policies per endpoint."
+  - id: "face_recognized"
+    description: "Image/frame contains a face matching an enrolled identity."
+    modality: "vision"
+    actions:
+      default: "block_and_log"
+      notes: "Requires explicit consent and strong lawful basis."
+
+thresholds:
+  detection:
+    # Minimum confidence for a bounding box to be considered a face.
+    min_confidence: 0.5
+    # Minimum bounding box area (relative to image) to reduce spurious small detections.
+    min_relative_area: 0.001
+  recognition:
+    # Target false-accept-rate budgets (FAR) on validation data.
+    far_targets:
+      - 1e-4
+      - 1e-5
+    # Thresholds for cosine similarity between embeddings, tuned per FAR on validation set.
+    operating_points:
+      - id: "strict"
+        far_target: 1e-5
+        similarity_threshold: 0.65   # placeholder; set via validation ROC/DET
+      - id: "balanced"
+        far_target: 1e-4
+        similarity_threshold: 0.60   # placeholder; set via validation ROC/DET
+
+postprocessing:
+  # If multiple faces are detected:
+  max_faces_per_image: 32
+  merge_overlapping_boxes: true
+  # Optional heuristics for PD handling.
+  redact_method: "blur"  # e.g., "blur", "solid_box", "pixelate"
+  blur_kernel_size: 31
+
+logging:
+  # Fields to emit into telemetry for each detection event.
+  fields:
+    - "detector_name"
+    - "detector_version"
+    - "event_type"
+    - "num_faces"
+    - "categories_hit"
+    - "operating_point"
+    - "action"
+  sampling:
+    # Optional downsampling for logging to manage volume (applied only to negatives).
+    negative_event_sampling_rate: 0.01
+    positive_event_sampling_rate: 1.0
+
+deployment_policies:
+  default:
+    # For generic endpoints:
+    face_present:
+      action: "redact_or_block"
+      notes: "Redact faces in logs and stored artefacts, block display where required."
+    face_recognized:
+      action: "block_and_log"
+      notes: >
+        Block the content and log as a high-severity event. Consider this
+        an indicator of potential training-data leakage or enforcement failure.
+  per_endpoint:
+    # Override examples; adjust as needed.
+    "internal_moderation_console":
+      face_present:
+        action: "log_only"
+        notes: "Moderators may need to inspect faces; ensure role-based access."
+    "public_assistant_output":
+      face_present:
+        action: "redact_or_block"
+      face_recognized:
+        action: "block_and_log"
