@@ -1,0 +1,44 @@
+version: 1
+profiles:
+  - id: "B0_chat_only"
+    description: "Chat-only assistant with no external retrieval or tools"
+    components:
+      indexing_pipeline: []
+      retriever: []
+      embeddings: []
+      tooling: []
+      caches:
+        - "per-session isolation"
+        - "short TTL (≤ 5 minutes)"
+  - id: "B1_rag_internal_docs"
+    description: "RAG over internal documents with per-tenant isolation"
+    components:
+      indexing_pipeline:
+        - "PII redaction F1 ≥ 0.98 on seeded PD"
+        - "provenance manifests signed"
+      retriever:
+        - "ABAC at query time"
+        - "policy-violation FN ≤ 1%, FP ≤ 2% on seeded probes"
+      embeddings:
+        - "no raw vector export without approval"
+        - "per-tenant keys; query rate limiting"
+      tooling:
+        - "no system-level tools; only retrieval"
+      caches:
+        - "per-session KV cache isolation"
+        - "no cross-tenant reuse"
+  - id: "B2_multi_tool_agent"
+    description: "Multi-tool agent with external APIs (e.g., email, calendar)"
+    components:
+      indexing_pipeline:
+        - "same as B1"
+      retriever:
+        - "same as B1 plus cross-tenant tests"
+      embeddings:
+        - "same as B1"
+      tooling:
+        - "least-privilege access tokens"
+        - "egress allow-lists"
+        - "schema validation for tool responses"
+      caches:
+        - "per-session KV and memory; short TTL"
