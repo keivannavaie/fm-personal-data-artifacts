@@ -1,0 +1,37 @@
+version: 1
+top_claim:
+  id: C0
+  statement: "The FM/RAG/agent system does not disclose personal data (PD) to unauthorized parties beyond defined policy."
+  context:
+    - "Deployment X (model version, endpoints)"
+    - "Threat model Y"
+  subclaims:
+    - id: C1
+      statement: "Training data collection and preprocessing are lawful and documented."
+      evidence:
+        - type: "dataset_lineage"
+        - type: "lawful_basis_register"
+        - type: "pretraining_logs"
+    - id: C2
+      statement: "Training and fine-tuning implement privacy-by-design (deduplication, DP or equivalent)."
+      evidence:
+        - type: "deduplication_report"
+        - type: "pii_filter_eval"
+        - type: "dp_accounting"
+    - id: C3
+      statement: "Runtime mediation prevents PD leakage via prompts, RAG, tools, and outputs."
+      evidence:
+        - type: "rag_policy_eval"
+        - type: "pd_detector_metrics"
+        - type: "red_team_results"
+    - id: C4
+      statement: "The system is prepared to process erasure/unlearning requests with documented limits."
+      evidence:
+        - type: "unlearning_test_report"
+        - type: "corpus_purge_logs"
+    - id: C5
+      statement: "Testing, monitoring, and audits provide sufficient coverage at deployment-relevant operating points."
+      evidence:
+        - type: "mia_metrics"
+        - type: "exposure_metrics"
+        - type: "telemetry_kpi_report"
